@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:log/Http_handler.dart';
 
 class Harvest extends StatefulWidget {
   @override
@@ -7,7 +8,7 @@ class Harvest extends StatefulWidget {
 }
 
 class _HarvestState extends State<Harvest> {
-  String? selectedZone = 'A'; // Initial value for the dropdown.
+  String? selectedZone = '1'; // Initial value for the dropdown.
   final mass_controller = TextEditingController();
   final number_controller = TextEditingController();
 
@@ -52,7 +53,7 @@ class _HarvestState extends State<Harvest> {
                 ),// Set this to whatever width you want.
                 child: DropdownButton<String>(
                   value: selectedZone,
-                  items: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+                  items: ['1', '2', '3', '4', '5']
                       .map<DropdownMenuItem<String>>(
                         (String value) {
                       return DropdownMenuItem<String>(
@@ -94,20 +95,11 @@ class _HarvestState extends State<Harvest> {
               child: Container(
                 width: 200,
                 height: 60,
-                child: ElevatedButton (
-                  child: Text('Submit'),
+                child: ElevatedButton(
                   onPressed: (){
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          // Retrieve the text that the user has entered by using the
-                          // TextEditingController.
-                          content: Text(number_controller.text + " // " + selectedZone! + " // "+ mass_controller.text + " // "),
-                        );
-                      },
-                    );
+                    Http_handler().post_tree_info(number_controller.text, selectedZone, mass_controller.text);
                   },
+                    child: Text('Send HTTP Request'),
                 ),
               ),
             ),
