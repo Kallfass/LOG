@@ -3,7 +3,7 @@ import 'dart:convert'; // For converting Dart objects to JSON
 
 class Http_handler{
 
-  String api_domain = "http://192.168.178.28:8080/tree";
+  String api_domain = "https://oliveorganizer.serralento.de";
 
 
   Future<void> post_tree_info(tree_number, zone_id, mass) async {
