@@ -3,10 +3,10 @@ import 'dart:convert'; // For converting Dart objects to JSON
 
 class Http_handler{
 
-  String api_domain = "https://oliveorganizer.serralento.de";
+  String api_domain = "https://oliveorganizer.serralento.de/tree";
 
 
-  Future<void> post_tree_info(tree_number, zone_id, mass) async {
+  Future<http.Response> post_tree_info(tree_number, zone_id, mass) async {
     final url = Uri.parse(api_domain);
 
     final Map<String, dynamic> data = {
@@ -29,9 +29,10 @@ class Http_handler{
     } else {
       print('Request failed with status: ${response.statusCode}');
     }
+    return response;
   }
 
-  Future<void> get_tree_info(tree_number, zone_id) async {
+  Future<http.Response> get_tree_info(tree_number, zone_id) async {
     final url = Uri.parse(api_domain);
 
     final queryParams = {
@@ -49,5 +50,6 @@ class Http_handler{
     } else {
       print('Request failed with status: ${response.statusCode}');
     }
+    return response;
   }
 }

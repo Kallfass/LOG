@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:log/Http_handler.dart';
+import 'package:quickalert/quickalert.dart';
 
 class Harvest extends StatefulWidget {
   @override
@@ -22,7 +23,39 @@ class _HarvestState extends State<Harvest> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('1. Select a number between 1 and 99'),
+            Text('Select a Zone'),
+            SizedBox(height: 16.0),
+            Center(
+              child: Container(
+                width: 70.0,
+                padding: EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.blue),
+                  borderRadius: BorderRadius.circular(4.0),
+                ),// Set this to whatever width you want.
+                child: DropdownButton<String>(
+                  value: selectedZone,
+                  items: ['1', '2', '3', '4', '5', '6', '7', '8']
+                      .map<DropdownMenuItem<String>>(
+                        (String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value, style: TextStyle(fontSize: 30.0)),
+                      );
+                    },
+                  ).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedZone = newValue;
+                    });
+                  },
+                ),
+              ),
+            ),
+
+
+            SizedBox(height: 20),
+            Text('Select a number between 1 and 99'),
             Center(
               child: Container(
                 width: 100.0,  // Set this to whatever width you want.
@@ -41,37 +74,7 @@ class _HarvestState extends State<Harvest> {
               ),
             ),
             SizedBox(height: 20),
-            Text('2. Select a letter from A to J'),
-            SizedBox(height: 16.0),
-            Center(
-              child: Container(
-                width: 70.0,
-                padding: EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue),
-                  borderRadius: BorderRadius.circular(4.0),
-                ),// Set this to whatever width you want.
-                child: DropdownButton<String>(
-                  value: selectedZone,
-                  items: ['1', '2', '3', '4', '5']
-                      .map<DropdownMenuItem<String>>(
-                        (String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value, style: TextStyle(fontSize: 30.0)),
-                      );
-                    },
-                  ).toList(),
-                  onChanged: (newValue) {
-                    setState(() {
-                      selectedZone = newValue;
-                    });
-                  },
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            Text('3. Enter the mass you want to add to the selected tree'),
+            Text('Enter the mass you want to add to the selected tree'),
             SizedBox(height: 16.0),
             Center(
               child: Container(
@@ -90,18 +93,52 @@ class _HarvestState extends State<Harvest> {
                 ),
               ),
             ),
-            SizedBox(height: 16.0),
+            SizedBox(height: 30.0),
             Center(
               child: Container(
                 width: 200,
                 height: 60,
                 child: ElevatedButton(
-                  onPressed: (){
-                    Http_handler().post_tree_info(number_controller.text, selectedZone, mass_controller.text);
+                  onPressed: () async {
+                    try {
+                      // Warte auf die Antwort der HTTP-Anfrage
+                      final response = await Http_handler().post_tree_info(
+                        number_controller.text,
+                        selectedZone,
+                        mass_controller.text,
+                      );
+
+                      // Überprüfe den Statuscode der Antwort
+                      if (response.statusCode == 200) {
+                        // Erfolg - zeige Erfolgsmeldung
+                        QuickAlert.show(
+                          context: context,
+                          type: QuickAlertType.success,
+                          text: 'Baum wurde eingetragen',
+                        );
+                      } else {
+                        // Fehler - zeige Fehlermeldung
+                        QuickAlert.show(
+                          context: context,
+                          type: QuickAlertType.error,
+                          title: 'Oops...',
+                          text: 'Sorry, something went wrong. Status code: ${response.statusCode}',
+                        );
+                      }
+                    } catch (e) {
+                      // Netzwerk- oder andere Fehler behandeln
+                      QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.error,
+                        title: 'Oops...',
+                        text: 'Sorry, something went wrong. Error: $e',
+                      );
+                    }
                   },
                     child: Text('Send HTTP Request'),
-                ),
-              ),
+                  )
+
+               ),
             ),
           ],
         ),
